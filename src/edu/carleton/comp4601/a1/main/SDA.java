@@ -13,7 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
-import edu.carleton.comp3601.a1.dao.DocumentCollection;
+import edu.carleton.comp4601.a1.dao.DocumentCollection;
 import edu.carleton.comp4601.a1.model.Document;
 
 @Path("/sda")

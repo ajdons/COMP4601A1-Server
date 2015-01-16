@@ -1,4 +1,4 @@
-package edu.carleton.comp3601.a1.dao;
+package edu.carleton.comp4601.a1.dao;
 
 import java.net.MalformedURLException;
 import java.net.URL;

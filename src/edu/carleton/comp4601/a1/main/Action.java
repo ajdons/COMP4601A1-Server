@@ -16,7 +16,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
-import edu.carleton.comp3601.a1.dao.DocumentCollection;
+import edu.carleton.comp4601.a1.dao.DocumentCollection;
 import edu.carleton.comp4601.a1.model.Document;
 
 public class Action {
