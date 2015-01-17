@@ -1,12 +1,19 @@
 package edu.carleton.comp4601.a1.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.bson.BSONObject;
+
+import com.mongodb.DBObject;
+
 @XmlRootElement
-public class Document {
+public class Document implements DBObject {
 	private Integer id;
 	private Integer score;
 	private String name;
@@ -97,5 +104,134 @@ public class Document {
 
 	public void removeLink(String link) {
 		links.remove(link);
+	}
+
+	@Override
+	public boolean containsField(String s) {
+		// TODO Auto-generated method stub
+		if(s.equalsIgnoreCase("id")){
+			return true;
+		}else if(s.equalsIgnoreCase("name")){
+			return true;
+		}else if(s.equalsIgnoreCase("text")){
+			return true;
+		}else if(s.equalsIgnoreCase("tags")){
+			return true;
+		}else if(s.equalsIgnoreCase("links")){
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean containsKey(String s) {
+		// TODO Auto-generated method stub
+		if(s.equalsIgnoreCase("id")){
+			return true;
+		}else if(s.equalsIgnoreCase("name")){
+			return true;
+		}else if(s.equalsIgnoreCase("text")){
+			return true;
+		}else if(s.equalsIgnoreCase("tags")){
+			return true;
+		}else if(s.equalsIgnoreCase("links")){
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public Object get(String s) {
+		// TODO Auto-generated method stub
+		if(s.equalsIgnoreCase("id")){
+			return getId();
+		}else if(s.equalsIgnoreCase("name")){
+			return getName();
+		}else if(s.equalsIgnoreCase("text")){
+			return getText();
+		}else if(s.equalsIgnoreCase("tags")){
+			return getTags();
+		}else if(s.equalsIgnoreCase("links")){
+			return getLinks();
+		}
+		return null;
+	}
+
+	@Override
+	public Set<String> keySet() {
+		// TODO Auto-generated method stub
+		Set<String> set = new HashSet();
+		set.add("id");
+		set.add("name");
+		set.add("text");
+		set.add("tags");
+		set.add("links");
+		return set;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Object put(String s, Object obj) {
+		// TODO Auto-generated method stub
+		if(s.equalsIgnoreCase("id")){
+			setId((Integer)obj);
+			return getId();
+		}else if(s.equalsIgnoreCase("name")){
+			setName((String)obj);
+			return getName();
+		}else if(s.equalsIgnoreCase("text")){
+			setText((String)obj);
+			return getText();
+		}else if(s.equalsIgnoreCase("tags")){
+			setTags((ArrayList<String>)obj);
+			return getTags();
+		}else if(s.equalsIgnoreCase("links")){
+			setLinks((ArrayList<String>)obj);
+			return getLinks();
+		}
+		
+		return null;
+	}
+
+	@Override
+	public void putAll(BSONObject arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void putAll(Map arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Object removeField(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Map<String, Object> toMap() {
+		// TODO Auto-generated method stub
+		Map<String,Object> map = new HashMap<String, Object>();
+		map.put("id", getId());
+		map.put("name", getName());
+		map.put("text", getText());
+		map.put("tags", getTags());
+		map.put("links", getLinks());
+		return map;
+	}
+
+	@Override
+	public boolean isPartialObject() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void markAsPartialObject() {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -28,10 +28,10 @@ public class DocumentCollection {
 		tags.add("tag2");
 		tags.add("tag3");
 		
-		List<URL> links = new ArrayList<URL>();
-		links.add(new URL ("http://www.link1.com"));
-		links.add(new URL ("http://www.link2.com"));
-		links.add(new URL ("http://www.link3.com"));
+		List<String> links = new ArrayList<String>();
+		links.add("http://www.link1.com");
+		links.add("http://www.link2.com");
+		links.add("http://www.link3.com");
 		
 		d.put("name", "Richard");
 		d.put("id", 0);
@@ -47,12 +47,12 @@ public class DocumentCollection {
 		tags2.add("tag2");
 		tags2.add("tag3");
 		
-		List<URL> links2 = new ArrayList<URL>();
-		links2.add(new URL ("http://www.link1.com"));
-		links2.add(new URL ("http://www.link2.com"));
-		links2.add(new URL ("http://www.link3.com"));
+		List<String> links2 = new ArrayList<String>();
+		links2.add("http://www.link1.com");
+		links2.add("http://www.link2.com");
+		links2.add("http://www.link3.com");
 		
-		d2.put("name", "Mike");
+		d2.put("name", "Adam");
 		d2.put("id", 1);
 		d2.put("text", "Some text" );
 		d2.put("tags", tags2);
@@ -87,13 +87,13 @@ public class DocumentCollection {
 		return documents.get(new Integer (id));
 	}
 	
-	public Document open(String name, int id, String text, ArrayList<String> tags, ArrayList<URL> links){
+	public Document open(String name, int id, String text, ArrayList<String> tags, ArrayList<String> links){
 		ConcurrentHashMap<Object, Object> d = new ConcurrentHashMap<>();
 		d.put("name", (String) name);
 		d.put("id", (int) id);
 		d.put("text", (String) text );
 		d.put("tags", (ArrayList<String>) tags);
-		d.put("links", (ArrayList<URL>) links);
+		d.put("links", (ArrayList<String>) links);
 		
 		Document doc = new Document(d);
 		
