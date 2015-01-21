@@ -111,6 +111,8 @@ public class Document implements DBObject {
 		// TODO Auto-generated method stub
 		if(s.equalsIgnoreCase("id")){
 			return true;
+		} else if(s.equalsIgnoreCase("score")){
+			return true;
 		}else if(s.equalsIgnoreCase("name")){
 			return true;
 		}else if(s.equalsIgnoreCase("text")){
@@ -127,6 +129,8 @@ public class Document implements DBObject {
 	public boolean containsKey(String s) {
 		// TODO Auto-generated method stub
 		if(s.equalsIgnoreCase("id")){
+			return true;
+		}else if(s.equalsIgnoreCase("score")){
 			return true;
 		}else if(s.equalsIgnoreCase("name")){
 			return true;
@@ -145,6 +149,8 @@ public class Document implements DBObject {
 		// TODO Auto-generated method stub
 		if(s.equalsIgnoreCase("id")){
 			return getId();
+		}else if(s.equalsIgnoreCase("score")){
+			return getScore();
 		}else if(s.equalsIgnoreCase("name")){
 			return getName();
 		}else if(s.equalsIgnoreCase("text")){
@@ -162,6 +168,7 @@ public class Document implements DBObject {
 		// TODO Auto-generated method stub
 		Set<String> set = new HashSet();
 		set.add("id");
+		set.add("score");
 		set.add("name");
 		set.add("text");
 		set.add("tags");
@@ -176,6 +183,9 @@ public class Document implements DBObject {
 		if(s.equalsIgnoreCase("id")){
 			setId((Integer)obj);
 			return getId();
+		}else if(s.equalsIgnoreCase("score")){
+			setScore((Integer)obj);
+			return getScore();
 		}else if(s.equalsIgnoreCase("name")){
 			setName((String)obj);
 			return getName();
@@ -188,8 +198,7 @@ public class Document implements DBObject {
 		}else if(s.equalsIgnoreCase("links")){
 			setLinks((ArrayList<String>)obj);
 			return getLinks();
-		}
-		
+		}		
 		return null;
 	}
 
@@ -216,6 +225,7 @@ public class Document implements DBObject {
 		// TODO Auto-generated method stub
 		Map<String,Object> map = new HashMap<String, Object>();
 		map.put("id", getId());
+		map.put("score", getScore());
 		map.put("name", getName());
 		map.put("text", getText());
 		map.put("tags", getTags());

@@ -1,16 +1,21 @@
 package edu.carleton.comp4601.a1.dao;
 
+
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bson.BSONObject;
+
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
 import edu.carleton.comp4601.a1.model.Document;
@@ -24,70 +29,124 @@ public class MongoDBManager {
 		coll =	db.getCollection("documents");
 	}
 	
+	public void addDoc(Integer id, Integer score, String name, String text,
+			ArrayList<String> tags, ArrayList<String> links){
+		//Check if doc id is already in the database
+		if (findDoc(id) == null){
+			ConcurrentHashMap<Object, Object> d = new ConcurrentHashMap<>();	
+			d.put("id", id);
+			d.put("score", score);
+			d.put("name", name);
+			d.put("text", text);
+			d.put("tags", tags);
+			d.put("links", links);
+		
+			Document doc = new Document(d);
+			
+			System.out.println("Adding document..");
+			coll.insert(doc);
+		}  else {	
+			System.out.println("Document was aldready added");
+		}
+		
+		
+	};
 	
-	public void addObject() throws MalformedURLException{
-		ConcurrentHashMap<Object, Object> d = new ConcurrentHashMap<>();
-		List<String> tags = new ArrayList<String>();
-		tags.add("tag1");
-		tags.add("tag2");
-		tags.add("tag3");
-		
-		List<String> links = new ArrayList<String>();
-		links.add("http://www.link1.com");
-		links.add("http://www.link2.com");
-		links.add("http://www.link3.com");
-		
-		d.put("name", "Richard");
-		d.put("id", 0);
-		d.put("text", "Some text" );
-		d.put("tags", tags);
-		d.put("links", links);
-		
-		Document doc = new Document(d);
-		
-		System.out.println("Adding document..");
-		coll.insert(doc);
-	}
-	
-	public void findObject(){
-		BasicDBObject query	= new BasicDBObject("id", 0);	
+	public Document findDoc(int id){
+		BasicDBObject query	= new BasicDBObject("id", id);	
 		DBCursor cursor = coll.find(query);
 		
 		coll.setObjectClass(Document.class); 
 		
-		Document obj = (Document) cursor.next();
-		int id = (Integer) obj.get("id");
-		System.out.println("Document id:" + id );
+		if(cursor.hasNext()){
+			Document obj = (Document) cursor.next();	 
+			int objId = (Integer) obj.get("id");
+			System.out.println("Document id:" +objId );
+			cursor.close();
+			return obj;
+		} else {
+			System.out.println("Couldn't find doc");
+			cursor.close();
+			return null;	
+		}
 	}
 	
-	public void updateObject(){
-		BasicDBObject query = new BasicDBObject("id", 0);
-		BasicDBObject updateObj = new BasicDBObject();
-		
-		updateObj.put("id", 2);
-		updateObj.put("name", "adam");
-		updateObj.put("text", "updated");
-		
-		System.out.println("Updating..");
-		coll.update(query, updateObj);
-	}
-	
-	public void removeObject(){		
-		BasicDBObject query = new BasicDBObject("id", 2);
+	public void removeDoc(int id){		
+		BasicDBObject query = new BasicDBObject("id", id);
 		DBCursor cursor = coll.find(query);	
 		coll.setObjectClass(Document.class);	
 		Document obj = (Document) cursor.next();
 	
 		System.out.println("Deleting document " + obj.getId());
 		coll.remove(obj);	
+		
+		cursor.close();
+	}
+	
+	public void updateDoc(int id, int score, String name, String text,
+		ArrayList<String> tags, ArrayList<String> links){
+		
+		BasicDBObject query = new BasicDBObject("id", id);
+		BasicDBObject updateObj = new BasicDBObject();
+		
+		
+		updateObj.put("id", id);
+		updateObj.put("score", score);
+		updateObj.put("name", name);
+		updateObj.put("text", text);
+		updateObj.put("tags", tags);
+		updateObj.put("links", links);
+		
+		System.out.println("Updating..");
+		
+		coll.update(query, updateObj);
+		
+	}
+
+	public List<Document> findAllDocs(){
+		List<Document> docs = new ArrayList<Document>();
+		
+		DBCursor cursor = coll.find();
+		while(cursor.hasNext()) {
+		    System.out.println(cursor.next().get("id"));
+		    BasicDBObject obj = (BasicDBObject) cursor.next();
+		   // docs.add(obj);
+		}
+			    
+		System.out.println(coll.getCount());
+		
+
+		return docs;
 	}
 	
 	public static void main(String args[]) throws UnknownHostException, MalformedURLException{
 		MongoDBManager db = new MongoDBManager();
-		db.addObject();
-		db.findObject();
-		db.updateObject();
-		db.removeObject();
+		
+		ArrayList<String> t = new ArrayList<String>();
+		t.add("tag1");
+		t.add("tag2");
+		t.add("tag3");
+		
+		ArrayList<String> l = new ArrayList<String>();
+		l.add("http://www.richardison.com");
+		l.add("http://www.adamdonegan.com");
+		
+		db.addDoc(1, 2, "Richard", "text text text", t, l);
+		db.findDoc(1);
+		db.addDoc(2, 2, "Richard", "text text text", t, l);
+		db.findDoc(2);
+		db.addDoc(3, 2, "Richard", "text text text", t, l);
+		db.findDoc(3);
+		db.addDoc(1, 2, "Richard", "text text text", t, l);
+		db.addDoc(4, 2, "Richard", "text text text", t, l);
+		db.addDoc(5, 2, "Richard", "text text text", t, l);
+		db.addDoc(16, 2, "Richard", "text text text", t, l);
+		
+		//db.updateDoc(2, 999, "Adam", "text2", t, l);
+		
+	//	db.removeDoc(3);
+		
+		System.out.print("SIZE OF DOCSSSS" + db.findAllDocs().size());
 	}
 	
 
