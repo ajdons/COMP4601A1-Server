@@ -87,10 +87,11 @@ public class DocumentCollection {
 		return documents.get(new Integer (id));
 	}
 	
-	public Document open(String name, int id, String text, ArrayList<String> tags, ArrayList<String> links){
+	public Document open(String name, int id, int score, String text, ArrayList<String> tags, ArrayList<String> links){
 		ConcurrentHashMap<Object, Object> d = new ConcurrentHashMap<>();
 		d.put("name", (String) name);
 		d.put("id", (int) id);
+		d.put("score",(int) score);
 		d.put("text", (String) text );
 		d.put("tags", (ArrayList<String>) tags);
 		d.put("links", (ArrayList<String>) links);
