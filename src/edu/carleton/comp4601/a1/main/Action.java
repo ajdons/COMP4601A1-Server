@@ -1,6 +1,7 @@
 package edu.carleton.comp4601.a1.main;
 
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -17,6 +18,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
 import edu.carleton.comp4601.a1.dao.DocumentCollection;
+import edu.carleton.comp4601.a1.dao.MongoDBManager;
 import edu.carleton.comp4601.a1.model.Document;
 
 public class Action {
@@ -28,10 +30,13 @@ public class Action {
 	
 	String id;
 	
-	public Action(UriInfo uriInfo, Request request, String id) {
+	MongoDBManager db;
+	
+	public Action(UriInfo uriInfo, Request request, String id) throws UnknownHostException {
 		this.uriInfo = uriInfo;
 		this.request = request;
 		this.id = id;
+		this.db = new MongoDBManager(); 
 	}
 	
 	@GET
