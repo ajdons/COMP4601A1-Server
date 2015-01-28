@@ -29,28 +29,38 @@ public class MongoDBManager {
 		coll =	db.getCollection("documents");
 	}
 	
-	public void addDoc(Integer id, Integer score, String name, String text,
-			ArrayList<String> tags, ArrayList<String> links){
-		//Check if doc id is already in the database
-		if (findDoc(id) == null){
-			ConcurrentHashMap<Object, Object> d = new ConcurrentHashMap<>();	
-			d.put("id", id);
-			d.put("score", score);
-			d.put("name", name);
-			d.put("text", text);
-			d.put("tags", tags);
-			d.put("links", links);
-		
-			Document doc = new Document(d);
-			
-			System.out.println("Adding document..");
+//	public void addDoc(Integer id, Integer score, String name, String text,
+//			ArrayList<String> tags, ArrayList<String> links){
+//		//Check if doc id is already in the database
+//		if (findDoc(id) == null){
+//			ConcurrentHashMap<Object, Object> d = new ConcurrentHashMap<>();	
+//			d.put("id", id);
+//			d.put("score", score);
+//			d.put("name", name);
+//			d.put("text", text);
+//			d.put("tags", tags);
+//			d.put("links", links);
+//		
+//			Document doc = new Document(d);
+//			
+//			System.out.println("Adding document..");
+//			coll.insert(doc);
+//		}  else {	
+//			System.out.println("Document was aldready added");
+//		}
+//		
+//		
+//	};
+	
+	public boolean addDoc(Document doc){
+		Document found = findDoc(doc.getId());
+		if(found == null){
 			coll.insert(doc);
-		}  else {	
-			System.out.println("Document was aldready added");
-		}
-		
-		
-	};
+			return true;
+		}else{
+			return false;
+		}	
+	}
 	
 	public Document findDoc(int id){
 		BasicDBObject query	= new BasicDBObject("id", id);	

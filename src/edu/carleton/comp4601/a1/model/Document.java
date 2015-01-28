@@ -1,11 +1,13 @@
 package edu.carleton.comp4601.a1.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ws.rs.core.MultivaluedMap;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.bson.BSONObject;
@@ -29,17 +31,16 @@ public class Document implements DBObject {
 	public Document(Integer id) {
 		this();
 		this.id = id;
-	}
-
-	@SuppressWarnings("unchecked")
-	public Document(Map<?, ?> map) {
+	}	
+	
+	public Document(MultivaluedMap<String, String> map) {
 		this();
-		this.id = (Integer) map.get("id");
-		this.score = (Integer) map.get("score");
-		this.name = (String) map.get("name");
-		this.text = (String) map.get("text");
-		this.tags = (ArrayList<String>) map.get("tags");
-		this.links = (ArrayList<String>) map.get("links");
+		this.id = Integer.parseInt(map.getFirst("id"));
+		this.score = Integer.parseInt(map.getFirst("score"));
+		this.name = map.getFirst("name");
+		this.text = map.getFirst("text");
+		this.tags = new ArrayList<>(Arrays.asList(map.getFirst("tags").split(":")));
+		this.links = new ArrayList<>(Arrays.asList(map.getFirst("links").split(":")));
 	}
 
 	public Integer getId() {

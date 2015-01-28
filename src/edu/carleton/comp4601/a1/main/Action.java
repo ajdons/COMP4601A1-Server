@@ -42,25 +42,6 @@ public class Action {
 		this.docColl = db.findAll();
 	}
 	
-	@GET
-	@Produces(MediaType.APPLICATION_XML)
-	public Document getDocument() throws NumberFormatException, MalformedURLException {
-		Document a = docColl.find(new Integer(id));
-		if (a == null) {
-			throw new RuntimeException("No such account: " + id);
-		}
-		return a;
-	}
-	
-	@GET
-	@Produces(MediaType.APPLICATION_XML)
-	public Document getDocumentTag() throws NumberFormatException, MalformedURLException {
-		Document a = docColl.find(new Integer(id));
-		if (a == null) {
-			throw new RuntimeException("No such tag: " + id);
-		}
-		return a;
-	}
 	
 	@PUT
 	@Consumes(MediaType.APPLICATION_XML)
@@ -68,13 +49,9 @@ public class Action {
 		Document c = doc.getValue();
 		return putAndGetResponse(c);
 	}
-
-	@DELETE
-	public void deleteDocument() throws NumberFormatException, MalformedURLException {
-		if (!docColl.close(new Integer(id)))
-			throw new RuntimeException("Document " + id + " not found");
-	}
 	
+	
+
 
 	private Response putAndGetResponse(Document doc) throws MalformedURLException {
 		Response res;
