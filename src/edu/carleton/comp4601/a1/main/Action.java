@@ -1,6 +1,7 @@
 package edu.carleton.comp4601.a1.main;
 
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -17,6 +18,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
 import edu.carleton.comp4601.a1.dao.DocumentCollection;
+import edu.carleton.comp4601.a1.dao.MongoDBManager;
 import edu.carleton.comp4601.a1.model.Document;
 
 public class Action {
@@ -28,18 +30,34 @@ public class Action {
 	
 	String id;
 	
-	public Action(UriInfo uriInfo, Request request, String id) {
+	MongoDBManager db;
+	
+	DocumentCollection docColl;
+	
+	public Action(UriInfo uriInfo, Request request, String id) throws UnknownHostException, MalformedURLException {
 		this.uriInfo = uriInfo;
 		this.request = request;
 		this.id = id;
+		this.db = new MongoDBManager(); 
+		this.docColl = db.findAll();
 	}
 	
 	@GET
 	@Produces(MediaType.APPLICATION_XML)
-	public Document getDocumentHTML() throws NumberFormatException, MalformedURLException {
-		Document a = DocumentCollection.getInstance().find(new Integer(id));
+	public Document getDocument() throws NumberFormatException, MalformedURLException {
+		Document a = docColl.find(new Integer(id));
 		if (a == null) {
 			throw new RuntimeException("No such account: " + id);
+		}
+		return a;
+	}
+	
+	@GET
+	@Produces(MediaType.APPLICATION_XML)
+	public Document getDocumentTag() throws NumberFormatException, MalformedURLException {
+		Document a = docColl.find(new Integer(id));
+		if (a == null) {
+			throw new RuntimeException("No such tag: " + id);
 		}
 		return a;
 	}
@@ -53,21 +71,21 @@ public class Action {
 
 	@DELETE
 	public void deleteDocument() throws NumberFormatException, MalformedURLException {
-		if (!DocumentCollection.getInstance().close(new Integer(id)))
+		if (!docColl.close(new Integer(id)))
 			throw new RuntimeException("Document " + id + " not found");
 	}
 	
 
 	private Response putAndGetResponse(Document doc) throws MalformedURLException {
 		Response res;
-		if (DocumentCollection.getInstance().getModel().contains(doc.getId())) {
+		if (docColl.getModel().contains(doc.getId())) {
 			//res = Response.noContent().build();
 			res = Response.ok().build();
 			
 		} else {
 			res = Response.created(uriInfo.getAbsolutePath()).build();
 		}
-		DocumentCollection.getInstance().getModel().set(doc.getId(), doc);
+		docColl.getModel().set(doc.getId(), doc);
 		return res;
 	}
 	

@@ -103,50 +103,84 @@ public class MongoDBManager {
 		
 	}
 
-	public List<Document> findAllDocs(){
-		List<Document> docs = new ArrayList<Document>();
-		
-		DBCursor cursor = coll.find();
-		while(cursor.hasNext()) {
-		    System.out.println(cursor.next().get("id"));
-		    BasicDBObject obj = (BasicDBObject) cursor.next();
-		   // docs.add(obj);
+	public DocumentCollection findAll() throws MalformedURLException{
+		DocumentCollection docColl = new DocumentCollection();
+		docColl.setDocuments(new ArrayList<Document>());
+		DBCursor cursor=coll.find();
+		while(cursor.hasNext()){
+			DBObject obj = cursor.next();
+			Integer id = (Integer) obj.get("id");
+			Document doc = findDoc(id);
+			docColl.getDocuments().add(doc);
 		}
-			    
-		System.out.println(coll.getCount());
+		return docColl;
+	}
+	
+	public DocumentCollection searchDocColl(List<String> tags) throws MalformedURLException{
+		DocumentCollection docColl = new DocumentCollection();
+		docColl.setDocuments(new ArrayList<Document>());
+		DBCursor cursor=coll.find();
+		while(cursor.hasNext()){
+			DBObject obj = cursor.next();
+			Integer id = (Integer) obj.get("id");
+			Document doc = findDoc(id);
+			if(doc.getTags().containsAll(tags)){
+				docColl.getDocuments().add(doc);
+			}
+		}
+		return docColl;
+	}
+	
+	public boolean removeSet(List<String> tags){
+		boolean res = false;
+		DBCursor cursor=coll.find();
+		while(cursor.hasNext()){
+			DBObject obj = cursor.next();
+			Integer id = (Integer) obj.get("id");
+			Document doc = findDoc(id);
+			if(doc.getTags().containsAll(tags)){
+				removeDoc(id);
+				res = true;
+			}
+		}
 		
-
-		return docs;
+		return res;
 	}
 	
 	public static void main(String args[]) throws UnknownHostException, MalformedURLException{
 		MongoDBManager db = new MongoDBManager();
-		
-		ArrayList<String> t = new ArrayList<String>();
-		t.add("tag1");
-		t.add("tag2");
-		t.add("tag3");
-		
-		ArrayList<String> l = new ArrayList<String>();
-		l.add("http://www.richardison.com");
-		l.add("http://www.adamdonegan.com");
-		
-		db.addDoc(1, 2, "Richard", "text text text", t, l);
-		db.findDoc(1);
-		db.addDoc(2, 2, "Richard", "text text text", t, l);
-		db.findDoc(2);
-		db.addDoc(3, 2, "Richard", "text text text", t, l);
-		db.findDoc(3);
-		db.addDoc(1, 2, "Richard", "text text text", t, l);
-		db.addDoc(4, 2, "Richard", "text text text", t, l);
-		db.addDoc(5, 2, "Richard", "text text text", t, l);
-		db.addDoc(16, 2, "Richard", "text text text", t, l);
+//		
+//		ArrayList<String> t = new ArrayList<String>();
+//		t.add("tag1");
+//		t.add("tag2");
+//		t.add("tag3");
+//		
+//		ArrayList<String> l = new ArrayList<String>();
+//		l.add("http://www.richardison.com");
+//		l.add("http://www.adamdonegan.com");
+//		
+//		db.addDoc(1, 2, "Richard", "text text text", t, l);
+//		db.findDoc(1);
+//		db.addDoc(2, 2, "Richard", "text text text", t, l);
+//		db.findDoc(2);
+//		db.addDoc(3, 2, "Richard", "text text text", t, l);
+//		db.findDoc(3);
+//		db.addDoc(1, 2, "Richard", "text text text", t, l);
+//		db.addDoc(4, 2, "Richard", "text text text", t, l);
+//		db.addDoc(5, 2, "Richard", "text text text", t, l);
+//		db.addDoc(16, 2, "Richard", "text text text", t, l);
 		
 		//db.updateDoc(2, 999, "Adam", "text2", t, l);
 		
 	//	db.removeDoc(3);
 		
-		System.out.print("SIZE OF DOCSSSS" + db.findAllDocs().size());
+		
+		//ArrayList<Document> list = db.findAllDocs();
+		
+	//	for (Document d : list){
+	//		System.out.print(d.toString());
+	//	}
+		
 	}
 	
 
