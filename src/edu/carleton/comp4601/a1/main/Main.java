@@ -182,11 +182,16 @@ public class Main {
 	@GET
 	@Path("search/{tags}")
 	@Produces(MediaType.APPLICATION_XML)
-	public DocumentCollection searchDocumentWithTagsXML(@PathParam("tags") String tags) throws UnknownHostException, MalformedURLException{
+	public List<Document> searchDocumentWithTagsXML(@PathParam("tags") String tags) throws UnknownHostException, MalformedURLException{
 		List<String> tagsList = new ArrayList<String>(Arrays.asList(tags.split(":")));
 		
 		DocumentCollection docColl = db.searchDocColl(tagsList);
-		return docColl;
+		List<Document> loa = new ArrayList<Document>();
+		loa.addAll(docColl.getModel());
+		
+		return loa;
+		
+		//return docColl;
 	}
 	
 	@GET
