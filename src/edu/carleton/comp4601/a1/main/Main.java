@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -19,7 +20,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
 
 import edu.carleton.comp4601.a1.dao.DocumentCollection;
 import edu.carleton.comp4601.a1.dao.MongoDBManager;
@@ -228,6 +228,19 @@ public class Main {
 		return res;		
 	}
 	
+	@DELETE
+	@Path("{id}")
+	public Response deleteDocumentWithId(@PathParam("id") int id) throws UnknownHostException {
+		Document doc = db.findDoc(new Integer(id));
+		Response res;
+		if(doc != null){
+			db.removeDoc(id);
+			res = Response.ok().build();
+		}else{
+			res = Response.noContent().build();
+		}
+		return res;
+	}
 	
 	
 
