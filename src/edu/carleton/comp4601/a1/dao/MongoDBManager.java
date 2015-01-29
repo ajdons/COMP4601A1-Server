@@ -93,25 +93,25 @@ public class MongoDBManager {
 		cursor.close();
 	}
 	
-	public void updateDoc(int id, int score, String name, String text,
-		ArrayList<String> tags, ArrayList<String> links){
-		
-		BasicDBObject query = new BasicDBObject("id", id);
-		BasicDBObject updateObj = new BasicDBObject();
-		
-		
-		updateObj.put("id", id);
-		updateObj.put("score", score);
-		updateObj.put("name", name);
-		updateObj.put("text", text);
-		updateObj.put("tags", tags);
-		updateObj.put("links", links);
-		
-		System.out.println("Updating..");
-		
-		coll.update(query, updateObj);
-		
-	}
+//	public void updateDoc(int id, int score, String name, String text,
+//		ArrayList<String> tags, ArrayList<String> links){
+//		
+//		BasicDBObject query = new BasicDBObject("id", id);
+//		BasicDBObject updateObj = new BasicDBObject();
+//		
+//		
+//		updateObj.put("id", id);
+//		updateObj.put("score", score);
+//		updateObj.put("name", name);
+//		updateObj.put("text", text);
+//		updateObj.put("tags", tags);
+//		updateObj.put("links", links);
+//		
+//		System.out.println("Updating..");
+//		
+//		coll.update(query, updateObj);
+//		
+//	}
 
 	public DocumentCollection findAll() throws MalformedURLException{
 		DocumentCollection docColl = new DocumentCollection();
@@ -155,6 +155,15 @@ public class MongoDBManager {
 		}
 		
 		return res;
+	}
+	
+	public boolean updateDoc(Document doc){	
+		Document found = findDoc(doc.getId());
+		if(found == null)
+			coll.insert(doc);
+		else
+			coll.update(found, doc);
+		return true;
 	}
 	
 	public static void main(String args[]) throws UnknownHostException, MalformedURLException{

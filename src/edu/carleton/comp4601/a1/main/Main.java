@@ -9,6 +9,7 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -18,6 +19,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.JAXBElement;
 
 import edu.carleton.comp4601.a1.dao.DocumentCollection;
 import edu.carleton.comp4601.a1.dao.MongoDBManager;
@@ -82,7 +84,27 @@ public class Main {
 		
 		return res;
 	}
-	
+	@PUT
+	@Path("{id}")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	public Response updateDocument(@PathParam("id") String id, MultivaluedMap<String,String> multivaluedMap) throws UnknownHostException {
+		Document doc = null;
+		
+		if (db.findDoc(new Integer(id)) != null){
+			 doc = new Document(multivaluedMap);
+		}
+		
+		System.out.println("updateDocument  "+ doc.getId());
+		Response res;
+
+		if(db.updateDoc(doc)){
+			res = Response.ok().build();
+		}else{
+			res = Response.noContent().build();
+		}
+		
+		return res;
+	}
 	@GET
 	@Path("documents")
 	@Produces(MediaType.APPLICATION_XML)
@@ -92,13 +114,7 @@ public class Main {
 		
 		return loa;
 	}
-	
-	@Path("{doc}")
-	@Produces(MediaType.APPLICATION_XML)
-	public Action getAccount(@PathParam("doc") String id) throws UnknownHostException, MalformedURLException {
-		return new Action(uriInfo, request, id);
-	}
-	
+
 	
 	
 	@GET
@@ -152,32 +168,6 @@ public class Main {
 	}
 	
 	
-	@GET
-	@Path("search/{tags}")
-	@Produces(MediaType.TEXT_HTML)
-	public String searchDocumentWithTagsHTML(@PathParam("tags") String tags) throws UnknownHostException, MalformedURLException{
-		List<String> tagsList = new ArrayList<String>(Arrays.asList(tags.split(":")));
-		
-		DocumentCollection docColl = db.searchDocColl(tagsList);
-		String html = "";
-		
-		if(docColl.getDocuments().size()!=0){
-			html = html + "<html>";
-			html = html + "<title>Documents Search Result</title>";
-			html = html + "<body><h1>Document(s) with tag(s): ";
-			for(String tag:tagsList)
-				html = html + tag + " ";
-			html = html + "</body></h1>";
-		
-			for(Document doc:docColl.getDocuments())
-				html = html +"<body><h2><a href='../"+ doc.getId() +"'>"+ doc.getName() + "</a></body></h2>";
-			html = html + "</html>";
-		}else{
-			html = html + "<html><title>Documents Search Result</title><body><h1>No documents found.</body></h1></html>";
-		}
-		
-		return html;
-	}
 	
 	@GET
 	@Path("search/{tags}")
@@ -186,13 +176,42 @@ public class Main {
 		List<String> tagsList = new ArrayList<String>(Arrays.asList(tags.split(":")));
 		
 		DocumentCollection docColl = db.searchDocColl(tagsList);
+		
+		System.out.println("Tags: " + tagsList.toString());
 		List<Document> loa = new ArrayList<Document>();
 		loa.addAll(docColl.getModel());
 		
 		return loa;
 		
-		//return docColl;
 	}
+	
+//	@GET
+//	@Path("search/{tags}")
+//	@Produces(MediaType.TEXT_HTML)
+//	public String searchDocumentWithTagsHTML(@PathParam("tags") String tags) throws UnknownHostException, MalformedURLException{
+//		List<String> tagsList = new ArrayList<String>(Arrays.asList(tags.split(":")));
+//		
+//		DocumentCollection docColl = db.searchDocColl(tagsList);
+//		String html = "";
+//		
+//		if(docColl.getDocuments().size()!=0){
+//			html = html + "<html>";
+//			html = html + "<title>Documents Search Result</title>";
+//			html = html + "<body><h1>Document(s) with tag(s): ";
+//			for(String tag:tagsList)
+//				html = html + tag + " ";
+//			html = html + "</body></h1>";
+//		
+//			for(Document doc:docColl.getDocuments())
+//				html = html +"<body><h2><a href='../"+ doc.getId() +"'>"+ doc.getName() + "</a></body></h2>";
+//			html = html + "</html>";
+//		}else{
+//			html = html + "<html><title>Documents Search Result</title><body><h1>No documents found.</body></h1></html>";
+//		}
+//		
+//		return html;
+//	}
+	
 	
 	@GET
 	@Path("delete/{tags}")
@@ -208,6 +227,8 @@ public class Main {
 		
 		return res;		
 	}
+	
+	
 	
 
 }
