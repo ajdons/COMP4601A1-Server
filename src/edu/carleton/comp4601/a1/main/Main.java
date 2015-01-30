@@ -23,6 +23,7 @@ import javax.ws.rs.core.UriInfo;
 
 import edu.carleton.comp4601.a1.dao.DocumentCollection;
 import edu.carleton.comp4601.a1.dao.MongoDBManager;
+import edu.carleton.comp4601.a1.exception.DocumentNotFoundException;
 import edu.carleton.comp4601.a1.model.Document;
 
 @Path("/sda")
@@ -108,11 +109,61 @@ public class Main {
 	@GET
 	@Path("documents")
 	@Produces(MediaType.APPLICATION_XML)
-	public List<Document> getDocuments() throws MalformedURLException {
+	public List<Document> getDocumentsXML() throws MalformedURLException {
 		List<Document> loa = new ArrayList<Document>();
 		loa.addAll(docColl.getModel());
 		
 		return loa;
+	}
+	
+	@GET
+	@Path("documents")
+	@Produces(MediaType.TEXT_HTML)
+	public String getDocumentsHTML() throws MalformedURLException {
+		List<Document> loa = new ArrayList<Document>();
+		loa.addAll(docColl.getModel());
+		
+		String html = "";
+		
+		if(docColl.getDocuments().size()!=0){
+			html = html + "<html>";
+			html = html + "<title>Document Library</title>";
+			html = html + "<body><h1>Document(s):</h1> ";
+			
+			for(Document doc :loa){
+				html = html + "</br>";
+				html = html + "doc id: " + doc.getId() + "</br>";		
+				html = html + "doc score: " + doc.getScore() + "</br>";
+				html = html + "doc name: " + doc.getName() + "</br>";
+				html = html + "doc text: " + doc.getText() + "</br>";	
+				
+				
+				if(doc.getLinks().size()!=0){
+	        		html = html + "doc links: ";
+	        		for(String link: doc.getLinks())
+	        			html = html + "<a href='"+ link +"'>" + link +"</a>"+"  ";
+	        	}else{
+	        		html = html + "Links: Link not found.";
+	        	}
+				
+	  		
+	        	html = html + "</br> doc tags: ";
+	        	for(String tag: doc.getTags())
+	        		html = html + "<a href='search/"+ tag +"'>" + tag +"</a>"+"  ";
+	        	
+	        	html = html + "</br>";
+			}
+			html = html + "</body>";
+		
+		html = html + "</html>";
+		
+		
+		
+		}else{
+			html = html + "<html><title>Document Library</title><body><h1>No documents found.</body></h1></html>";
+		}
+		
+		return html;
 	}
 
 	
@@ -121,37 +172,48 @@ public class Main {
 	@Path("{id}")
 	@Produces(MediaType.TEXT_HTML)
 	public String viewDocumentHTML(@PathParam("id") String id) throws NumberFormatException, UnknownHostException {
-		Document doc = db.findDoc(new Integer(id));
-		if (doc == null) {
-			throw new RuntimeException("No such document with id:" + id);
-		}
-		System.out.println("viewDocumentHTML()");
 		
-		String html = "";
-		
-		html = html + "<html>";
-		html = html + "<title>Document Information</title>";
-		html = html + "<body><h1>Document:</body></h1>";
-		html = html + "<body><h2>id: "+doc.getId()+"</body></h2>";
-		html = html + "<body><h2>name: "+doc.getName()+"</body></h2>";
-		html = html + "<body><h2>next: "+doc.getText()+"</body></h2>";
-		
-		if(doc.getLinks().size()!=0){
-			html = html + "<body><h2>Links: ";
-			for(String link: doc.getLinks())
-				html = html + "<a href='"+ link +"'>" + link +"</a>"+"  ";
-			html = html + "</body></h2></html>";
-		}else{
-			html = html + "<body><h2>Links: Link not found.</body></h2></html>";
-		}
-		
-		html = html + "<body><h2>Tags: ";
-		for(String tag: doc.getTags())
-			html = html + "<a href='search/"+ tag +"'>" + tag +"</a>"+"  ";
-		
-		html = html + "</body></h2></html>";
-		
-		return html;
+        try {
+        	int docId = Integer.parseInt(id);
+        
+        	Document doc = db.findDoc(docId);
+        	
+        	if (doc == null){
+        		throw new DocumentNotFoundException("No such document with id:" + id);
+        	}
+  		
+        	System.out.println("viewDocumentHTML()");
+  		
+        	String html = "";
+  		
+        	html = html + "<html>";
+        	html = html + "<title>Document Info</title>";
+        	html = html + "<body><h1><u>Document</u></body></h1>";
+        	html = html + "<body><h2>id: "+doc.getId()+"</body></h2>";
+        	html = html + "<body><h2>name: "+doc.getName()+"</body></h2>";
+        	html = html + "<body><h2>next: "+doc.getText()+"</body></h2>";
+  		
+        	if(doc.getLinks().size()!=0){
+        		html = html + "<body><h2>Links: ";
+        		for(String link: doc.getLinks())
+        			html = html + "<a href='"+ link +"'>" + link +"</a>"+"  ";
+        		html = html + "</body></h2></html>";
+        	}else{
+        		html = html + "<body><h2>Links: Link not found.</body></h2></html>";
+        	}
+  		
+        	html = html + "<body><h2>Tags: ";
+        	for(String tag: doc.getTags())
+        		html = html + "<a href='search/"+ tag +"'>" + tag +"</a>"+"  ";
+  		
+        	html = html + "</body></h2></html>";
+  		
+        	return html;
+        }
+        catch(NumberFormatException e)
+        {
+            throw new DocumentNotFoundException("Not a number!");
+        }	
 	}
 	
 	
@@ -159,15 +221,16 @@ public class Main {
 	@Path("{id}")
 	@Produces(MediaType.APPLICATION_XML)
 	public Document viewDocumentXML(@PathParam("id") String id) throws NumberFormatException, UnknownHostException {
+
 		Document doc = db.findDoc(new Integer(id));
-		if (doc == null) {
-			throw new RuntimeException("No such document with id:" + id);
-		}
-		System.out.println("getDocumentXML()");
+		
+		if (doc == null){
+    		throw new DocumentNotFoundException("No such document with id:" + id);
+    	}
+	
+		System.out.println("viewDocumentXML()");
 		return doc;
 	}
-	
-	
 	
 	@GET
 	@Path("search/{tags}")
@@ -185,32 +248,33 @@ public class Main {
 		
 	}
 	
-//	@GET
-//	@Path("search/{tags}")
-//	@Produces(MediaType.TEXT_HTML)
-//	public String searchDocumentWithTagsHTML(@PathParam("tags") String tags) throws UnknownHostException, MalformedURLException{
-//		List<String> tagsList = new ArrayList<String>(Arrays.asList(tags.split(":")));
-//		
-//		DocumentCollection docColl = db.searchDocColl(tagsList);
-//		String html = "";
-//		
-//		if(docColl.getDocuments().size()!=0){
-//			html = html + "<html>";
-//			html = html + "<title>Documents Search Result</title>";
-//			html = html + "<body><h1>Document(s) with tag(s): ";
-//			for(String tag:tagsList)
-//				html = html + tag + " ";
-//			html = html + "</body></h1>";
-//		
-//			for(Document doc:docColl.getDocuments())
-//				html = html +"<body><h2><a href='../"+ doc.getId() +"'>"+ doc.getName() + "</a></body></h2>";
-//			html = html + "</html>";
-//		}else{
-//			html = html + "<html><title>Documents Search Result</title><body><h1>No documents found.</body></h1></html>";
-//		}
-//		
-//		return html;
-//	}
+	@GET
+	@Path("search/{tags}")
+	@Produces(MediaType.TEXT_HTML)
+	public String searchDocumentWithTagsHTML(@PathParam("tags") String tags) throws UnknownHostException, MalformedURLException{
+		List<String> tagsList = new ArrayList<String>(Arrays.asList(tags.split(":")));
+		
+		DocumentCollection docColl = db.searchDocColl(tagsList);
+		String html = "";
+		
+		if(docColl.getDocuments().size()!=0){
+			html = html + "<html>";
+			html = html + "<title>Documents Search Result</title>";
+			html = html + "<body><h1>Document(s) with tag(s): ";
+			
+			for(String tag:tagsList)
+				html = html + tag + " ";
+			html = html + "</body></h1>";
+		
+			for(Document doc:docColl.getDocuments())
+				html = html +"<body><h2><a href='../"+ doc.getId() +"'>"+ doc.getName() + "</a></body></h2>";
+			html = html + "</html>";
+		}else{
+			html = html + "<html><title>Documents Search Result</title><body><h1>No documents found.</body></h1></html>";
+		}
+		
+		return html;
+	}
 	
 	
 	@GET
